@@ -24,7 +24,8 @@ fn main() {
 
 struct Memo {
     timestamp: DateTime<Local>,
-    body: String
+    category: String,
+    body: String,
 }
 
 impl Memo {
@@ -35,12 +36,13 @@ impl Memo {
 
         let timestamp = Local::now();
         let body = args[1].clone();
+        let category = args[2].clone();
 
-        Ok(Memo { timestamp, body })
+        Ok(Memo { timestamp, category, body })
     }
 
     fn to_string(&self) -> String {
-        format!("timestamp: {}\nbody: {}\n", self.timestamp, self.body)
+        format!("timestamp: {}\ncategory: {}\nbody: {}\n", self.timestamp, self.category, self.body)
     }
 }
 
