@@ -54,6 +54,37 @@ impl Memo {
     }
 }
 
+pub enum InputType {
+    MemoT(Memo),
+    ListT(i32),  // 表示件数を保持 
+}
+
+pub fn parse(args: &[String]) -> Result<InputType, &'static str> {
+    if args.len() == 1 {
+        return Err("not enough arguments");
+    }
+
+    if args[1] == "--list" {
+        if args.len() == 2 {
+            Ok(InputType::ListT(5))
+        } else {
+            // 整数以外が入力されたときのエラー処理
+            if args[2].trim().parse::<i32>().is_err() {
+                return Err("type a number");
+            }
+            let list_num : i32 = args[2].trim().parse().unwrap();
+            Ok(InputType::ListT(list_num))
+        }
+    } else {
+        // Memo::new() のエラー処理
+        let memo = Memo::new(args);
+        if let Err(e) = memo {
+            return Err(e);
+        }
+        Ok(InputType::MemoT(Memo::new(args)?))
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
