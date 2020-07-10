@@ -90,7 +90,9 @@ pub fn latest_memo_list(num: i32) -> Result<(), Box<Error>> {
 pub fn show_list(lists: Vec<String>) {  
     let mut cnt = 0;
     for line in lists {
-        println!("{}", line);
+        if line != "category: \"None\"" {
+            println!("{}", line);
+        }
         cnt += 1;
         if cnt%3 == 0 {
             println!("");
@@ -149,9 +151,9 @@ impl Memo {
 
     pub fn to_string(&self) -> String {
         if let Some(s) = &self.category {
-            format!("timestamp: {}\ncategory: {}\nbody: {}\n", self.timestamp, s, self.body)
+            format!("timestamp: {}\ncategory: {}\n{}\n", self.timestamp, s, self.body)
         } else {
-            format!("timestamp: {}\ncategory: \"None\"\nbody: {}\n", self.timestamp, self.body)
+            format!("timestamp: {}\ncategory: \"None\"\n{}\n", self.timestamp, self.body)
         }
     }
 
