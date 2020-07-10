@@ -6,6 +6,7 @@ use std::error::Error;
 pub enum InputType {
     MemoT(Memo),
     ListT(i32),  // 表示件数を保持 
+    SearchT(String), // 検索する単語を保持
 }
 
 pub fn parse(args: &[String]) -> Result<InputType, &'static str> {
@@ -24,17 +25,47 @@ pub fn parse(args: &[String]) -> Result<InputType, &'static str> {
             let list_num : i32 = args[2].trim().parse().unwrap();
             Ok(InputType::ListT(list_num))
         }
+    } else if args[1] == "--search" {
+        if args.len() < 3 {
+            return Err("not enough arguments");
+        }
+        Ok(InputType::SearchT(args[2].clone()))
     } else {
         // Memo::new() のエラー処理
         let memo = Memo::new(args);
-        if let Err(e) = memo {
-            return Err(e);
-        }
-        Ok(InputType::MemoT(Memo::new(args)?))  // ??
+        return match memo {
+            Err(e) => Err(e),
+            Ok(m) => Ok(InputType::MemoT(m))
+        };
     }
 }
 
-pub fn show_list(num: i32) -> Result<(), Box<Error>> {  
+pub fn search(word: String) -> Result<(), Box<Error>> {
+    let mut cnt = 0;
+    let mut flag = false;
+    let mut pre3 = [String::from(""), String::from(""), String::from("")];
+    let mut results : Vec<String> = Vec::new();
+    for result in BufReader::new(File::open("memo.txt")?).lines() {
+        let line = result?;
+        pre3[cnt%3] = line.clone();
+        if line.contains(&word) {
+            flag = true;
+        }
+        if cnt%3==2 && flag {
+            for i in pre3.iter() {
+                results.push(i.to_string());
+            }
+            flag = false
+        }
+        cnt += 1;
+    }
+
+    show_list(results);
+
+    Ok(())
+}
+
+pub fn latest_memo_list(num: i32) -> Result<(), Box<Error>> {
     let mut lines = Vec::new();
     for result in BufReader::new(File::open("memo.txt")?).lines() {
         let line = result?;
@@ -52,16 +83,20 @@ pub fn show_list(num: i32) -> Result<(), Box<Error>> {
     }
     results.reverse();
 
+    show_list(results);
+
+    Ok(())
+}
+
+pub fn show_list(lists: Vec<String>) {  
     let mut cnt = 0;
-    for line in results {
+    for line in lists {
         println!("{}", line);
         cnt += 1;
         if cnt%3 == 0 {
             println!("");
         }
     }
-
-    Ok(())
 }
 
 pub struct Memo {
