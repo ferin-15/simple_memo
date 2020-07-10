@@ -37,7 +37,10 @@ fn main() {
                     }
                 },
                 InputType::LoopT => {
-                    simple_memo::loop_mode();
+                    if let Err(e) = simple_memo::loop_mode() {
+                        eprintln!("Application error: {}", e);
+                        process::exit(1);
+                    }
                 }
             }
         }
