@@ -24,25 +24,29 @@ fn main() {
 
 struct Memo {
     timestamp: DateTime<Local>,
-    category: String,
+    category: Option<String>,
     body: String,
 }
 
 impl Memo {
     fn new(args: &[String]) -> Result<Memo, &'static str> {
-        if args.len() == 0 {
+        if args.len() == 1 {
             return Err("not enough arguments");
         }
 
         let timestamp = Local::now();
         let body = args[1].clone();
-        let category = args[2].clone();
+        let category = if args.len() >= 3 {
+            Some(args[2].clone())
+        } else {
+            None
+        };
 
         Ok(Memo { timestamp, category, body })
     }
 
     fn to_string(&self) -> String {
-        format!("timestamp: {}\ncategory: {}\nbody: {}\n", self.timestamp, self.category, self.body)
+        format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, self.category, self.body)
     }
 }
 
