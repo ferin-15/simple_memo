@@ -25,7 +25,10 @@ fn main() {
                     }
                 },
                 InputType::ListT(num) => {
-                    // show_list(num);
+                    if let Err(e) = simple_memo::show_list(num) {
+                        eprintln!("Application error: {}", e);
+                        process::exit(1);
+                    }
                 }
             }
         }
