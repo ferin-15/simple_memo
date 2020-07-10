@@ -33,7 +33,7 @@ impl Memo {
         format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, category, self.body)
     }
 
-    pub fn add_memo(memo: &Memo) -> Result<(), String> {
+    pub fn add_memo(&self) -> Result<(), String> {
         let file = OpenOptions::new()
             .append(true)
             .open("memo.txt");
@@ -48,7 +48,7 @@ impl Memo {
             Err(error) => return Err(format!("Problem opening file: {:?}", error)),
         };
     
-        file.write_all(memo.to_string().as_bytes()).unwrap();   // memo.txt に書き込み
+        file.write_all(self.to_string().as_bytes()).unwrap();   // memo.txt に書き込み
     
         Ok(())
     }
