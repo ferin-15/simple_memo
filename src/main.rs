@@ -9,11 +9,13 @@ use chrono::{Local, DateTime};
 fn main() {
     let args: Vec<String> = env::args().collect();
 
+    // 入力をparse
     let memo = Memo::new(&args).unwrap_or_else(|err| {
         eprintln!("Problem making memo data: {}", err);
         process::exit(1);
     });
 
+    // ファイルに書き込み
     if let Err(e) = add_memo(&memo) {
         eprintln!("Application error: {}", e);
         process::exit(1);
@@ -48,7 +50,7 @@ fn add_memo(memo: &Memo) -> Result<(), String> {
         .open("memo.txt");
     let mut file = match file {
         Ok(file) => file,
-        Err(ref error) if error.kind() == ErrorKind::NotFound => {
+        Err(ref error) if error.kind() == ErrorKind::NotFound => {  // memo.txtが存在しない場合新規作成
             match File::create("memo.txt") {
                 Ok(fc) => fc,
                 Err(e) => return Err(format!("Problem making file: {:?}", e)),
@@ -56,7 +58,8 @@ fn add_memo(memo: &Memo) -> Result<(), String> {
         },
         Err(error) => return Err(format!("Problem opening file: {:?}", error)),
     };
-    file.write_all(memo.to_string().as_bytes()).unwrap();
+
+    file.write_all(memo.to_string().as_bytes()).unwrap();   // memo.txt に書き込み
 
     Ok(())
 }
