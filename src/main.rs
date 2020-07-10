@@ -29,7 +29,10 @@ fn main() {
                         eprintln!("Application error: {}", e);
                         process::exit(1);
                     }
-                }
+                },
+                InputType::SearchT(word) => {
+                    // search(word);
+                },
             }
         }
     }
