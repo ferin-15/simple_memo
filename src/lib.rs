@@ -1,6 +1,68 @@
-use std::io::{Write, ErrorKind};
+use std::io::{Write, ErrorKind, BufRead, BufReader};
 use std::fs::{File, OpenOptions};
 use chrono::{Local, DateTime};
+use std::error::Error;
+
+pub enum InputType {
+    MemoT(Memo),
+    ListT(i32),  // 表示件数を保持 
+}
+
+pub fn parse(args: &[String]) -> Result<InputType, &'static str> {
+    if args.len() == 1 {
+        return Err("not enough arguments");
+    }
+
+    if args[1] == "--list" {
+        if args.len() == 2 {
+            Ok(InputType::ListT(5))
+        } else {
+            // 整数以外が入力されたときのエラー処理
+            if args[2].trim().parse::<i32>().is_err() {
+                return Err("type a number");
+            }
+            let list_num : i32 = args[2].trim().parse().unwrap();
+            Ok(InputType::ListT(list_num))
+        }
+    } else {
+        // Memo::new() のエラー処理
+        let memo = Memo::new(args);
+        if let Err(e) = memo {
+            return Err(e);
+        }
+        Ok(InputType::MemoT(Memo::new(args)?))  // ??
+    }
+}
+
+pub fn show_list(num: i32) -> Result<(), Box<Error>> {  
+    let mut lines = Vec::new();
+    for result in BufReader::new(File::open("memo.txt")?).lines() {
+        let line = result?;
+        lines.push(line);
+    }
+    lines.reverse();
+
+    let mut results = Vec::new();
+    let mut cnt = 0;
+    for line in lines {
+        if cnt < 3*num {
+            results.push(line);
+        }
+        cnt += 1;
+    }
+    results.reverse();
+
+    let mut cnt = 0;
+    for line in results {
+        println!("{}", line);
+        cnt += 1;
+        if cnt%3 == 0 {
+            println!("\n");
+        }
+    }
+
+    Ok(())
+}
 
 pub struct Memo {
     pub timestamp: DateTime<Local>,
@@ -53,6 +115,7 @@ impl Memo {
         Ok(())
     }
 }
+
 
 #[cfg(test)]
 mod test {
