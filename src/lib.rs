@@ -47,7 +47,7 @@ pub fn search(word: String) -> Result<(), Box<Error>> {
     for result in BufReader::new(File::open("memo.txt")?).lines() {
         let line = result?;
         pre3[cnt%3] = line.clone();
-        if line.contains(&word) {
+        if line.contains(&word) && cnt%3 != 0 {
             flag = true;
         }
         if cnt%3==2 && flag {
