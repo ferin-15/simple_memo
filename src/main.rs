@@ -46,7 +46,11 @@ impl Memo {
     }
 
     fn to_string(&self) -> String {
-        format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, self.category, self.body)
+        let category = match &self.category {
+            Some(s) => s,
+            None => "None"
+        };
+        format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, category, self.body)
     }
 }
 
