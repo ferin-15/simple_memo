@@ -110,7 +110,7 @@ pub fn loop_mode() -> Result<(), Box<Error>> {
         for i in input {
             args.push(i.to_string());
         }
-        if args[1] == "quit" {
+        if args.len() > 1 && args[1] == "quit" {
             return Ok(());
         }
 
