@@ -100,12 +100,16 @@ pub fn show_list(lists: Vec<String>) {
 
 pub fn loop_mode() -> Result<(), Box<Error>> {
     loop {
+        println!("メモを入力してください (quitで終了)");
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
         let input : Vec<&str> = input.split_whitespace().collect();
         let mut args = vec![String::from("")];  // コマンドライン引数で最初にfile名が入る部分と合わせる
         for i in input {
             args.push(i.to_string());
+        }
+        if args[1] == "quit" {
+            return Ok(());
         }
 
         let input = parse(&args);
