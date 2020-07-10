@@ -1,3 +1,3 @@
-/target
-Cargo.lock
-memo.txt
+/target/
+/Cargo.lock
+/memo.txt
