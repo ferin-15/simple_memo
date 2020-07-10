@@ -33,7 +33,7 @@ impl Memo {
         format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, category, self.body)
     }
 
-    pub fn add_memo(&self) -> Result<(), String> {
+    pub fn write(&self) -> Result<(), String> {
         let file = OpenOptions::new()
             .append(true)
             .open("memo.txt");

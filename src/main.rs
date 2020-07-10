@@ -16,7 +16,7 @@ fn main() {
     });
 
     // ファイルに書き込み
-    if let Err(e) = Memo::add_memo(&memo) {
+    if let Err(e) = Memo::write(&memo) {
         eprintln!("Application error: {}", e);
         process::exit(1);
     }
