@@ -37,7 +37,7 @@ fn main() {
                     }
                 },
                 InputType::LoopT => {
-                    
+                    simple_memo::loop_mode();
                 }
             }
         }

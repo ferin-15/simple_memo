@@ -1,4 +1,4 @@
-use std::io::{Write, ErrorKind, BufRead, BufReader};
+use std::io::{self, Write, ErrorKind, BufRead, BufReader};
 use std::fs::{File, OpenOptions};
 use chrono::{Local, DateTime};
 use std::error::Error;
@@ -98,6 +98,28 @@ pub fn show_list(lists: Vec<String>) {
     }
 }
 
+pub fn loop_mode() -> Result<(), Box<Error>> {
+    loop {
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        let input : Vec<&str> = input.split_whitespace().collect();
+        let mut args = vec![String::from("")];  // コマンドライン引数で最初にfile名が入る部分と合わせる
+        for i in input {
+            args.push(i.to_string());
+        }
+
+        let input = parse(&args);
+        if let Ok(InputType::MemoT(memo)) = input {
+            memo.write()?;
+        } 
+        // else {
+        //     return Err("invalid input");
+        // }
+
+        latest_memo_list(10)?;
+    }
+}
+
 pub struct Memo {
     pub timestamp: DateTime<Local>,
     pub category: Option<String>,
@@ -123,9 +145,9 @@ impl Memo {
 
     pub fn to_string(&self) -> String {
         if let Some(s) = &self.category {
-            format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, s, self.body)
+            format!("timestamp: {}\ncategory: {}\nbody: {}\n", self.timestamp, s, self.body)
         } else {
-            format!("timestamp: {}\nbody: {}\n", self.timestamp, self.body)
+            format!("timestamp: {}\ncategory: \"None\"\nbody: {}\n", self.timestamp, self.body)
         }
     }
 
