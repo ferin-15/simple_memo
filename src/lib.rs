@@ -1,4 +1,4 @@
-use std::io::{Write, ErrorKind, BufRead, BufReader};
+use std::io::{self, Write, ErrorKind, BufRead, BufReader};
 use std::fs::{File, OpenOptions};
 use chrono::{Local, DateTime};
 use std::error::Error;
@@ -7,14 +7,13 @@ pub enum InputType {
     MemoT(Memo),
     ListT(i32),  // 表示件数を保持 
     SearchT(String), // 検索する単語を保持
+    LoopT,
 }
 
 pub fn parse(args: &[String]) -> Result<InputType, &'static str> {
     if args.len() == 1 {
-        return Err("not enough arguments");
-    }
-
-    if args[1] == "--list" {
+        Ok(InputType::LoopT)
+    } else if args[1] == "--list" {
         if args.len() == 2 {
             Ok(InputType::ListT(5))
         } else {
@@ -48,7 +47,7 @@ pub fn search(word: String) -> Result<(), Box<Error>> {
     for result in BufReader::new(File::open("memo.txt")?).lines() {
         let line = result?;
         pre3[cnt%3] = line.clone();
-        if line.contains(&word) {
+        if line.contains(&word) && cnt%3 != 0 {
             flag = true;
         }
         if cnt%3==2 && flag {
@@ -91,11 +90,39 @@ pub fn latest_memo_list(num: i32) -> Result<(), Box<Error>> {
 pub fn show_list(lists: Vec<String>) {  
     let mut cnt = 0;
     for line in lists {
-        println!("{}", line);
+        if line != "category: \"None\"" {
+            println!("{}", line);
+        }
         cnt += 1;
         if cnt%3 == 0 {
             println!("");
         }
+    }
+}
+
+pub fn loop_mode() -> Result<(), Box<Error>> {
+    loop {
+        println!("メモを入力してください (quitで終了)");
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        let input : Vec<&str> = input.split_whitespace().collect();
+        let mut args = vec![String::from("")];  // コマンドライン引数で最初にfile名が入る部分と合わせる
+        for i in input {
+            args.push(i.to_string());
+        }
+        if args[1] == "quit" {
+            return Ok(());
+        }
+
+        let input = parse(&args);
+        if let Ok(InputType::MemoT(memo)) = input {
+            memo.write()?;
+        } 
+        // else {
+        //     return Err("invalid input");
+        // }
+
+        latest_memo_list(10)?;
     }
 }
 
@@ -124,9 +151,9 @@ impl Memo {
 
     pub fn to_string(&self) -> String {
         if let Some(s) = &self.category {
-            format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, s, self.body)
+            format!("timestamp: {}\ncategory: {}\n{}\n", self.timestamp, s, self.body)
         } else {
-            format!("timestamp: {}\nbody: {}\n", self.timestamp, self.body)
+            format!("timestamp: {}\ncategory: \"None\"\n{}\n", self.timestamp, self.body)
         }
     }
 
