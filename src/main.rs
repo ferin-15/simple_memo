@@ -1,10 +1,10 @@
 extern crate chrono;
+extern crate simple_memo;
 
 use std::env;
 use std::process;
-use std::io::{Write, ErrorKind};
-use std::fs::{File, OpenOptions};
-use chrono::{Local, DateTime};
+
+use simple_memo::Memo;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -16,50 +16,9 @@ fn main() {
     });
 
     // ファイルに書き込み
-    if let Err(e) = add_memo(&memo) {
+    if let Err(e) = Memo::write(&memo) {
         eprintln!("Application error: {}", e);
         process::exit(1);
     }
 }
 
-struct Memo {
-    timestamp: DateTime<Local>,
-    body: String
-}
-
-impl Memo {
-    fn new(args: &[String]) -> Result<Memo, &'static str> {
-        if args.len() == 0 {
-            return Err("not enough arguments");
-        }
-
-        let timestamp = Local::now();
-        let body = args[1].clone();
-
-        Ok(Memo { timestamp, body })
-    }
-
-    fn to_string(&self) -> String {
-        format!("timestamp: {}\nbody: {}\n", self.timestamp, self.body)
-    }
-}
-
-fn add_memo(memo: &Memo) -> Result<(), String> {
-    let file = OpenOptions::new()
-        .append(true)
-        .open("memo.txt");
-    let mut file = match file {
-        Ok(file) => file,
-        Err(ref error) if error.kind() == ErrorKind::NotFound => {  // memo.txtが存在しない場合新規作成
-            match File::create("memo.txt") {
-                Ok(fc) => fc,
-                Err(e) => return Err(format!("Problem making file: {:?}", e)),
-            }
-        },
-        Err(error) => return Err(format!("Problem opening file: {:?}", error)),
-    };
-
-    file.write_all(memo.to_string().as_bytes()).unwrap();   // memo.txt に書き込み
-
-    Ok(())
-}
