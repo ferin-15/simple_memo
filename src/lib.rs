@@ -57,7 +57,7 @@ pub fn show_list(num: i32) -> Result<(), Box<Error>> {
         println!("{}", line);
         cnt += 1;
         if cnt%3 == 0 {
-            println!("\n");
+            println!("");
         }
     }
 
@@ -88,11 +88,11 @@ impl Memo {
     }
 
     pub fn to_string(&self) -> String {
-        let category = match &self.category {
-            Some(s) => s,
-            None => "None"
-        };
-        format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, category, self.body)
+        if let Some(s) = &self.category {
+            format!("timestamp: {}\ncategory: {:?}\nbody: {}\n", self.timestamp, s, self.body)
+        } else {
+            format!("timestamp: {}\nbody: {}\n", self.timestamp, self.body)
+        }
     }
 
     pub fn write(&self) -> Result<(), String> {
