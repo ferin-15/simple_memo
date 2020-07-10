@@ -73,3 +73,40 @@ fn add_memo(memo: &Memo) -> Result<(), String> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn memo_new_argc1() {
+        let args = vec![String::from("filename")];
+        let result = Memo::new(&args);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn memo_new_argc2() {
+        let args = vec![String::from("filename"), String::from("body")];
+        let result = Memo::new(&args);
+
+        assert!(result.is_ok());
+        if let Ok(memo) = result {
+            assert_eq!(memo.body, String::from("body"));
+            assert!(memo.category.is_none());
+        }
+    }
+
+    #[test]
+    fn memo_new_argc3() {
+        let args = vec![String::from("filename"), String::from("body"), String::from("category")];
+        let result = Memo::new(&args);
+
+        assert!(result.is_ok());
+        if let Ok(memo) = result {
+            assert_eq!(memo.body, String::from("body"));
+            assert_eq!(memo.category, Some(String::from("category")));
+        }
+    }
+}
