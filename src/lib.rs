@@ -51,20 +51,21 @@ pub fn search(word: String) -> Result<(), Box<Error>> {
         if line.contains(&word) {
             flag = true;
         }
-        if cnt%3==0 && flag {
+        if cnt%3==2 && flag {
             for i in pre3.iter() {
                 results.push(i.to_string());
             }
             flag = false
         }
+        cnt += 1;
     }
 
-    // show_list(results);
+    show_list(results);
 
     Ok(())
 }
 
-pub fn show_list(num: i32) -> Result<(), Box<Error>> {  
+pub fn latest_memo_list(num: i32) -> Result<(), Box<Error>> {
     let mut lines = Vec::new();
     for result in BufReader::new(File::open("memo.txt")?).lines() {
         let line = result?;
@@ -82,16 +83,20 @@ pub fn show_list(num: i32) -> Result<(), Box<Error>> {
     }
     results.reverse();
 
+    show_list(results);
+
+    Ok(())
+}
+
+pub fn show_list(lists: Vec<String>) {  
     let mut cnt = 0;
-    for line in results {
+    for line in lists {
         println!("{}", line);
         cnt += 1;
         if cnt%3 == 0 {
             println!("");
         }
     }
-
-    Ok(())
 }
 
 pub struct Memo {

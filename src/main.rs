@@ -25,13 +25,16 @@ fn main() {
                     }
                 },
                 InputType::ListT(num) => {
-                    if let Err(e) = simple_memo::show_list(num) {
+                    if let Err(e) = simple_memo::latest_memo_list(num) {
                         eprintln!("Application error: {}", e);
                         process::exit(1);
                     }
                 },
                 InputType::SearchT(word) => {
-                    // search(word);
+                    if let Err(e) = simple_memo::search(word) {
+                        eprintln!("Application error: {}", e);
+                        process::exit(1);
+                    }
                 },
             }
         }
