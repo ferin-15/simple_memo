@@ -36,6 +36,9 @@ fn main() {
                         process::exit(1);
                     }
                 },
+                InputType::LoopT => {
+                    
+                }
             }
         }
     }

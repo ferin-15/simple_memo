@@ -7,14 +7,13 @@ pub enum InputType {
     MemoT(Memo),
     ListT(i32),  // 表示件数を保持 
     SearchT(String), // 検索する単語を保持
+    LoopT,
 }
 
 pub fn parse(args: &[String]) -> Result<InputType, &'static str> {
     if args.len() == 1 {
-        return Err("not enough arguments");
-    }
-
-    if args[1] == "--list" {
+        Ok(InputType::LoopT)
+    } else if args[1] == "--list" {
         if args.len() == 2 {
             Ok(InputType::ListT(5))
         } else {
